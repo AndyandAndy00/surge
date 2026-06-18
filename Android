@@ -159,14 +159,18 @@ proxy-groups:
   tolerance: 30
 
 - name: 🤖 AI服务
-  type: select
+  type: smart
+  uselightgbm: true
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 80
+  collectdata: true
   proxies:
   - 🇸🇬 新加坡
-  - 🚀 智选节点
-  - 🇭🇰 香港
   - 🇹🇼 台湾
+  - 🇭🇰 香港
   - 🇯🇵 日本
-  - 🇺🇸 美国
+  - 🇺🇸 美国 
 
 - name: 📺 港台番剧
   type: select
@@ -198,29 +202,27 @@ proxy-groups:
   - 🇺🇸 美国
 
 - name: 💬 国外社交媒体
-  type: smart
+  type: fallback
   proxies:
   - 🇸🇬 新加坡
   - 🇭🇰 香港
   - 🇹🇼 台湾
   - 🇯🇵 日本
   - 🇺🇸 美国
-  uselightgbm: true
-  collectdata: false
-  strategy: sticky-sessions
+  url: https://cp.cloudflare.com/generate_204
   interval: 300
-  tolerance: 30
+  lazy: true
 
 - name: 🌐 Final
   type: select
   proxies:
-  - DIRECT
   - 🚀 智选节点
   - 🇭🇰 香港
   - 🇹🇼 台湾
   - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇺🇸 美国
+  - DIRECT
 
 - name: 🇭🇰 香港
   type: smart
