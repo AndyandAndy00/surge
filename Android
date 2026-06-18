@@ -205,6 +205,11 @@ proxy-groups:
   - 🇹🇼 台湾
   - 🇯🇵 日本
   - 🇺🇸 美国
+  uselightgbm: true
+  collectdata: false
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 30
 
 - name: 🌐 Final
   type: select
