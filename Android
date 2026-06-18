@@ -151,6 +151,7 @@ proxy-groups:
 - name: 🚀 智选节点
   type: smart
   include-all: true
+  filter: "^(?!.*(剩余|官网|套餐|流量|订阅|过期|TG|群|测试|回国|国内|回国线路|回国专线|国际|移动|China back|back to CN|return CN)).*$"
   uselightgbm: true
   collectdata: false
   strategy: sticky-sessions
