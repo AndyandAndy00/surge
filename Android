@@ -161,10 +161,10 @@ proxy-groups:
 - name: 🤖 AI服务
   type: select
   proxies:
+  - 🇸🇬 新加坡
   - 🚀 智选节点
   - 🇭🇰 香港
   - 🇹🇼 台湾
-  - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇺🇸 美国
 
@@ -198,13 +198,13 @@ proxy-groups:
   - 🇺🇸 美国
 
 - name: 💬 国外社交媒体
-  type: select
+  type: smart
   proxies:
-  - 🇺🇸 美国
+  - 🇸🇬 新加坡
   - 🇭🇰 香港
   - 🇹🇼 台湾
-  - 🇸🇬 新加坡
   - 🇯🇵 日本
+  - 🇺🇸 美国
 
 - name: 🌐 Final
   type: select
