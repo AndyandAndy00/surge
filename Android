@@ -414,6 +414,9 @@ rule-providers:
     path: ./ruleset/Reddit.yaml
 
 rules:
+- DOMAIN-SUFFIX,dbankcloud.cn,DIRECT
+- DOMAIN-SUFFIX,hicloud.com,DIRECT
+- DOMAIN-SUFFIX,huawei.com,DIRECT
 - DOMAIN-SUFFIX,microsoft.com.cn,DIRECT
 - DOMAIN-SUFFIX,login.partner.microsoftonline.cn,DIRECT
 - DOMAIN-SUFFIX,azure.cn,DIRECT
