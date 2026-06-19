@@ -232,7 +232,6 @@ proxy-groups:
   proxies:
   - 🇸🇬 新加坡
   - 🇯🇵 日本
-  - 🇭🇰 香港
   - 🇺🇸 美国
   - 🇨🇳 台湾
   hidden: true
