@@ -151,7 +151,6 @@ proxy-groups:
 - name: 🚀 智选节点
   type: smart
   include-all: true
-  filter: "^(?!.*(剩余|官网|套餐|流量|订阅|过期|TG|群|测试|回国|国内|回国线路|回国专线|国际|移动|China back|back to CN|return CN)).*$"
   uselightgbm: true
   collectdata: false
   strategy: sticky-sessions
@@ -167,7 +166,7 @@ proxy-groups:
   collectdata: true
   proxies:
   - 🇸🇬 新加坡
-  - 🇹🇼 台湾
+  - 🇨🇳 台湾
   - 🇭🇰 香港
   - 🇯🇵 日本
   - 🇺🇸 美国 
@@ -178,7 +177,7 @@ proxy-groups:
   - DIRECT
   - 🚀 智选节点
   - 🇭🇰 香港
-  - 🇹🇼 台湾
+  - 🇨🇳 台湾
   - 🇸🇬 新加坡
 
 - name: 🔍 Google
@@ -186,7 +185,7 @@ proxy-groups:
   proxies:
   - 🚀 智选节点
   - 🇭🇰 香港
-  - 🇹🇼 台湾
+  - 🇨🇳 台湾
   - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇺🇸 美国
@@ -196,7 +195,7 @@ proxy-groups:
   proxies:
   - 🚀 智选节点
   - 🇭🇰 香港
-  - 🇹🇼 台湾
+  - 🇨🇳 台湾
   - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇺🇸 美国
@@ -206,7 +205,7 @@ proxy-groups:
   proxies:
   - 🇸🇬 新加坡
   - 🇭🇰 香港
-  - 🇹🇼 台湾
+  - 🇨🇳 台湾
   - 🇯🇵 日本
   - 🇺🇸 美国
   url: https://cp.cloudflare.com/generate_204
@@ -218,7 +217,7 @@ proxy-groups:
   proxies:
   - 🚀 智选节点
   - 🇭🇰 香港
-  - 🇹🇼 台湾
+  - 🇨🇳 台湾
   - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇺🇸 美国
@@ -234,7 +233,7 @@ proxy-groups:
   include-all: true
   filter: ^(.*)(香港|HK|Hong|hk|澳门)+(.*)$
 
-- name: 🇹🇼 台湾
+- name: 🇨🇳 台湾
   type: smart
   uselightgbm: true
   collectdata: false
