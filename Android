@@ -171,8 +171,6 @@ proxy-groups:
   - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇺🇸 美国
-  - 🇨🇳 台湾
-  - 🇭🇰 香港
 
 - name: 📺 港台番剧
   type: select
