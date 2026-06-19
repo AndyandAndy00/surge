@@ -235,6 +235,7 @@ proxy-groups:
   - 🇭🇰 香港
   - 🇺🇸 美国
   - 🇨🇳 台湾
+  hidden: true
 
 - name: 🧠 Claude可用
   type: url-test
@@ -245,6 +246,7 @@ proxy-groups:
   - 🇸🇬 新加坡
   - 🇯🇵 日本
   - 🇺🇸 美国
+  hidden: true
 
 - name: 💡 Gemini可用
   type: url-test
@@ -256,6 +258,7 @@ proxy-groups:
   - 🇯🇵 日本
   - 🇭🇰 香港
   - 🇺🇸 美国
+  hidden: true
 
 - name: 🇭🇰 香港
   type: smart
