@@ -455,6 +455,7 @@ rules:
 - DOMAIN-SUFFIX,login.partner.microsoftonline.cn,DIRECT
 - DOMAIN-SUFFIX,azure.cn,DIRECT
 - DOMAIN-SUFFIX,officecdn.cn,DIRECT
+- DOMAIN-KEYWORD,yandex,🔍 Google
 - RULE-SET,港台番剧,📺 港台番剧
 - RULE-SET,Gemini,🤖 AI服务
 - RULE-SET,Claude,🤖 AI服务
