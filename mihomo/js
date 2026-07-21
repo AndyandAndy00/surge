@@ -43,6 +43,10 @@ const rules = [
   'RULE-SET,nvidia_cn,直连',
   'RULE-SET,apple_cn,直连',
   'RULE-SET,microsoft_cn,直连',
+  'DOMAIN-SUFFIX,bing.com,直连',
+  'DOMAIN-SUFFIX,bing.net,直连',
+  'DOMAIN-SUFFIX,bingapis.com,直连',
+  'DOMAIN-SUFFIX,msn.com,直连',
   'DOMAIN,fsend.cn,直连',
   'DOMAIN,international-gfe.download.nvidia.com,直连',
 ];
@@ -539,10 +543,74 @@ function main(config) {
   };
 
   // ---DNS配置---
+// 保留原订阅 DNS 配置，仅追加必要修正
 
-// 完整保留原订阅 DNS 配置
 if (config.dns) {
-  newConfig['dns'] = config.dns;
+
+  newConfig.dns = {
+    ...config.dns,
+
+    // 保留原订阅 nameserver-policy
+    'nameserver-policy': {
+      ...(config.dns['nameserver-policy'] || {}),
+
+      // Bing 国内直连 DNS
+      '+.bing.com': [
+        'https://dns.alidns.com/dns-query'
+      ],
+
+      '+.bing.net': [
+        'https://dns.alidns.com/dns-query'
+      ],
+
+      '+.bingapis.com': [
+        'https://dns.alidns.com/dns-query'
+      ],
+
+      '+.msn.com': [
+        'https://dns.alidns.com/dns-query'
+      ],
+    },
+  };
+
+} else {
+
+  // 如果订阅没有 DNS，则使用基础 DNS
+  newConfig.dns = {
+    enable: true,
+    ipv6: true,
+    'enhanced-mode': 'fake-ip',
+    'fake-ip-range': '198.18.0.1/16',
+
+    'default-nameserver': [
+      '223.5.5.5',
+      '119.29.29.29'
+    ],
+
+    nameserver: [
+      'https://dns.alidns.com/dns-query'
+    ],
+
+    'nameserver-policy': {
+
+      '+.bing.com': [
+        'https://dns.alidns.com/dns-query'
+      ],
+
+      '+.bing.net': [
+        'https://dns.alidns.com/dns-query'
+      ],
+
+      '+.bingapis.com': [
+        'https://dns.alidns.com/dns-query'
+      ],
+
+      '+.msn.com': [
+        'https://dns.alidns.com/dns-query'
+      ],
+    },
+  };
+
 }
 
 //保留原订阅hosts
