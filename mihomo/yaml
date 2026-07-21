@@ -1,1 +1,518 @@
+mixed-port: 7890
+allow-lan: false
+bind-address: '*'
+mode: rule
+log-level: info
+external-controller: ''
+unified-delay: true
+sniffer:
+  enable: true
+  sniff:
+    TLS:
+      ports:
+      - 443
+      override-destination: true
+    HTTP:
+      ports:
+      - 80
+      - 443
+      override-destination: false
+  skip-domain:
+  - +.push.apple.com
+  parse-pure-ip: true
+  force-dns-mapping: true
+  override-destination: false
+  skip-dst-address:
+  - 91.105.192.0/23
+  - 91.108.4.0/22
+  - 91.108.8.0/21
+  - 91.108.16.0/21
+  - 91.108.56.0/22
+  - 95.161.64.0/20
+  - 149.154.160.0/20
+  - 185.76.151.0/24
+  - 2001:67c:4e8::/48
+  - 2001:b28:f23c::/47
+  - 2001:b28:f23f::/48
+  - 2a0a:f280:203::/48
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  use-hosts: true
+  respect-rules: true
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 114.114.114.114
+  proxy-server-nameserver:
+    - https://cn.ali-oss.cn:44443/dns-query/6dafe708-d9d6-48cc-a768-e6ed3018a9ec
+    - https://hk.ali-oss.cn:44443/dns-query/6dafe708-d9d6-48cc-a768-e6ed3018a9ec
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 114.114.114.114
+  fallback:
+    - 1.1.1.1
+    - 8.8.8.8
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite:
+      - gfw
+    ipcidr:
+      - 240.0.0.0/4
+    domain:
+      - +.google.com
+      - +.facebook.com
+      - +.youtube.com
+  fake-ip-filter:
+    - "*.lan"
+    - "*.localdomain"
+    - "*.example"
+    - "*.invalid"
+    - "*.localhost"
+    - "*.test"
+    - "*.local"
+    - "*.home.arpa"
+    - time.*.com
+    - time.*.gov
+    - time.*.edu.cn
+    - time.*.apple.com
+    - time1.*.com
+    - time2.*.com
+    - time3.*.com
+    - time4.*.com
+    - time5.*.com
+    - time6.*.com
+    - time7.*.com
+    - ntp.*.com
+    - ntp1.*.com
+    - ntp2.*.com
+    - ntp3.*.com
+    - ntp4.*.com
+    - ntp5.*.com
+    - ntp6.*.com
+    - ntp7.*.com
+    - "*.time.edu.cn"
+    - "*.ntp.org.cn"
+    - +.pool.ntp.org
+    - time1.cloud.tencent.com
+    - stun.*.*
+    - stun.*.*.*
+    - swscan.apple.com
+    - mesu.apple.com
+    - music.163.com
+    - "*.music.163.com"
+    - "*.126.net"
+    - musicapi.taihe.com
+    - music.taihe.com
+    - songsearch.kugou.com
+    - trackercdn.kugou.com
+    - "*.kuwo.cn"
+    - api-jooxtt.sanook.com
+    - api.joox.com
+    - y.qq.com
+    - "*.y.qq.com"
+    - streamoc.music.tc.qq.com
+    - mobileoc.music.tc.qq.com
+    - isure.stream.qqmusic.qq.com
+    - dl.stream.qqmusic.qq.com
+    - aqqmusic.tc.qq.com
+    - amobile.music.tc.qq.com
+    - localhost.ptlogin2.qq.com
+    - "*.msftconnecttest.com"
+    - "*.msftncsi.com"
+    - "*.xiami.com"
+    - "*.music.migu.cn"
+    - music.migu.cn
+    - +.wotgame.cn
+    - +.wggames.cn
+    - +.wowsgame.cn
+    - +.wargaming.net
+    - "*.*.*.srv.nintendo.net"
+    - "*.*.stun.playstation.net"
+    - xbox.*.*.microsoft.com
+    - "*.*.xboxlive.com"
+    - "*.ipv6.microsoft.com"
+    - teredo.*.*.*
+    - teredo.*.*
+    - speedtest.cros.wr.pvp.net
+    - +.jjvip8.com
+    - www.douyu.com
+    - activityapi.huya.com
+    - activityapi.huya.com.w.cdngslb.com
+    - www.bilibili.com
+    - api.bilibili.com
+    - a.w.bilicdn1.com
 
+proxy-groups:
+- name: 🚀 智选节点
+  type: smart
+  include-all: true
+  uselightgbm: true
+  collectdata: false
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 30
+
+- name: 🤖 AI服务
+  type: smart
+  uselightgbm: true
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 40
+  collectdata: true
+  proxies:
+  - 🤖 ChatGPT可用
+  - 🇸🇬 新加坡
+  - 🇯🇵 日本
+  - 🇺🇸 美国
+
+- name: 📺 港台番剧
+  type: select
+  proxies:
+  - DIRECT
+  - 🚀 智选节点
+  - 🇭🇰 香港
+  - 🇨🇳 台湾
+  - 🇸🇬 新加坡
+
+- name: 🔍 Google
+  type: select
+  proxies:
+  - 🚀 智选节点
+  - 🇭🇰 香港
+  - 🇨🇳 台湾
+  - 🇸🇬 新加坡
+  - 🇯🇵 日本
+  - 🇺🇸 美国
+
+- name: 🎬 国外流媒体
+  type: select
+  proxies:
+  - 🚀 智选节点
+  - 🇭🇰 香港
+  - 🇨🇳 台湾
+  - 🇸🇬 新加坡
+  - 🇯🇵 日本
+  - 🇺🇸 美国
+
+- name: 💬 国外社交媒体
+  type: fallback
+  proxies:
+  - 🇸🇬 新加坡
+  - 🇭🇰 香港
+  - 🇨🇳 台湾
+  - 🇯🇵 日本
+  - 🇺🇸 美国
+  url: https://cp.cloudflare.com/generate_204
+  interval: 300
+  lazy: true
+
+- name: 🌐 Final
+  type: select
+  proxies:
+  - 🚀 智选节点
+  - 🇭🇰 香港
+  - 🇨🇳 台湾
+  - 🇸🇬 新加坡
+  - 🇯🇵 日本
+  - 🇺🇸 美国
+  - DIRECT
+
+- name: 🤖 ChatGPT可用
+  type: url-test
+  url: https://api.openai.com/v1/models
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇸🇬 新加坡
+  - 🇯🇵 日本
+  - 🇺🇸 美国
+  - 🇨🇳 台湾
+  hidden: true
+
+- name: 🧠 Claude可用
+  type: url-test
+  url: https://claude.ai/
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇸🇬 新加坡
+  - 🇯🇵 日本
+  - 🇺🇸 美国
+  hidden: true
+
+- name: 💡 Gemini可用
+  type: url-test
+  url: https://generativelanguage.googleapis.com
+  interval: 300
+  tolerance: 50
+  proxies:
+  - 🇸🇬 新加坡
+  - 🇯🇵 日本
+  - 🇭🇰 香港
+  - 🇺🇸 美国
+  hidden: true
+
+- name: 🇭🇰 香港
+  type: smart
+  uselightgbm: true
+  collectdata: false
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 30
+  include-all: true
+  filter: ^(.*)(香港|HK|Hong|hk|澳门)+(.*)$
+
+- name: 🇨🇳 台湾
+  type: smart
+  uselightgbm: true
+  collectdata: false
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 30
+  include-all: true
+  filter: ^(.*)(台|TW|Tai)+(.*)$
+  
+- name: 🇸🇬 新加坡
+  type: smart
+  uselightgbm: true
+  collectdata: false
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 30
+  include-all: true
+  filter: ^(.*)(新加坡|狮城|SG|Singapore)+(.*)$
+
+- name: 🇯🇵 日本
+  type: smart
+  uselightgbm: true
+  collectdata: false
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 30
+  include-all: true
+  filter: ^(.*)(日本|JP|韩|Japan)+(.*)$
+
+- name: 🇺🇸 美国
+  type: smart
+  uselightgbm: true
+  collectdata: false
+  strategy: sticky-sessions
+  interval: 300
+  tolerance: 30
+  include-all: true
+  filter: ^(.*)(美国|US|USA|United States|States|American|Los Angeles|San Jose|Seattle|Chicago|Dallas|Silicon Valley)+(.*)$
+
+
+rule-providers:
+  Gemini:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml
+    path: ./ruleset/Gemini.yaml
+  Claude:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml
+    path: ./ruleset/Claude.yaml
+  Microsoft:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml
+    path: ./ruleset/Microsoft.yaml
+  icloud:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt
+    path: ./ruleset/icloud.yaml
+    interval: 86400
+  apple:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt
+    path: ./ruleset/apple.yaml
+    interval: 86400
+  private:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
+    path: ./ruleset/private.yaml
+    interval: 86400
+  Google:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Google/Google.yaml
+    path: ./ruleset/Google.yaml
+  applications:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt
+    path: ./ruleset/applications.yaml
+  港台番剧:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.yaml
+    path: ./ruleset/港台番剧.yaml
+  Netflix:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix.yaml
+    path: ./ruleset/Netflix.yaml
+  YouTube:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube.yaml
+    path: ./ruleset/YouTube.yaml
+  Tiktok:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml
+    path: ./ruleset/Tiktok.yaml
+  Twitter:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml
+    path: ./ruleset/Twitter.yaml
+  Telegram:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml
+    path: ./ruleset/Telegram.yaml
+  Instagram:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Instagram/Instagram.yaml
+    path: ./ruleset/Instagram.yaml
+  国内网站:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/China/China.yaml
+    path: ./ruleset/国内网站.yaml
+  国内流媒体:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMedia/ChinaMedia.yaml
+    path: ./ruleset/国内流媒体.yaml
+  Google Voice:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GoogleVoice/GoogleVoice.yaml
+    path: ./ruleset/Google Voice.yaml
+  OpenAI:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml
+    path: ./ruleset/OpenAI.yaml
+  Perplexity:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Perplexity/Perplexity.yaml
+    path: ./ruleset/Perplexity.yaml
+  Cursor:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cursor/Cursor.yaml
+    path: ./ruleset/Cursor.yaml
+  GitHub:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml
+    path: ./ruleset/GitHub.yaml
+  Reddit:
+    type: http
+    behavior: classical
+    interval: 86400
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Reddit/Reddit.yaml
+    path: ./ruleset/Reddit.yaml
+
+rules:
+- DOMAIN-SUFFIX,microsoft.com.cn,DIRECT
+- DOMAIN-SUFFIX,login.partner.microsoftonline.cn,DIRECT
+- DOMAIN-SUFFIX,azure.cn,DIRECT
+- DOMAIN-SUFFIX,officecdn.cn,DIRECT
+- DOMAIN-KEYWORD,yandex,🔍 Google
+- RULE-SET,港台番剧,📺 港台番剧
+- RULE-SET,Gemini,🤖 AI服务
+- RULE-SET,Claude,🤖 AI服务
+- RULE-SET,OpenAI,🤖 AI服务
+- RULE-SET,Perplexity,🤖 AI服务
+- RULE-SET,Cursor,🤖 AI服务
+- RULE-SET,applications,DIRECT
+- RULE-SET,private,DIRECT
+- RULE-SET,icloud,DIRECT
+- RULE-SET,apple,DIRECT
+- RULE-SET,国内网站,DIRECT
+- RULE-SET,国内流媒体,DIRECT
+- GEOIP,LAN,DIRECT
+- GEOIP,CN,DIRECT
+- RULE-SET,Microsoft,DIRECT
+- RULE-SET,GitHub,🔍 Google
+- RULE-SET,Google,🔍 Google
+- RULE-SET,Netflix,🎬 国外流媒体
+- RULE-SET,YouTube,🎬 国外流媒体
+- RULE-SET,Tiktok,🎬 国外流媒体
+- RULE-SET,Twitter,💬 国外社交媒体
+- RULE-SET,Telegram,💬 国外社交媒体
+- RULE-SET,Reddit,💬 国外社交媒体
+- RULE-SET,Instagram,💬 国外社交媒体
+- RULE-SET,Google Voice,💬 国外社交媒体
+- MATCH,🌐 Final
+ipv6: true
+socks-port: 7891
+port: 7892
+redir-port: 0
+tproxy-port: 0
+tcp-concurrent: false
+find-process-mode: strict
+lan-allowed-ips:
+- 0.0.0.0/0
+- ::/0
+lan-disallowed-ips: []
+authentication: []
+skip-auth-prefixes:
+- 127.0.0.1/32
+- ::1/128
+tun:
+  enable: true
+  device: Mihomo
+  stack: mixed
+  auto-route: true
+  auto-redirect: false
+  auto-detect-interface: true
+  dns-hijack: []
+  route-exclude-address: []
+  mtu: 1500
+profile:
+  store-selected: true
+  store-fake-ip: true
+geo-auto-update: true
+geo-update-interval: 24
+geodata-mode: false
+geox-url:
+  geoip: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat
+  geosite: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat
+  mmdb: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb
+  asn: https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb
