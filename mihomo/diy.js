@@ -544,7 +544,6 @@ function main(config) {
 
   // ---DNS配置---
 // 保留原订阅 DNS 配置，仅追加必要修正
-
 if (config.dns) {
 
   newConfig.dns = {
