@@ -14,8 +14,8 @@ const ruleOptionsEnable = {
   Steam: false,
   TikTok: false,
   Twitter: false,
-  Emby: true,
-  PikPak: true,
+  Emby: false,
+  PikPak: false,
   Spotify: false,
   AdBlock: true,
 };
