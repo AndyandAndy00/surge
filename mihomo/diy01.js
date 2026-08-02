@@ -20,17 +20,15 @@ const ruleOptionsEnable = {
   AdBlock: true,
 };
 
-// 节点过滤正则（内核原生 exclude-filter 使用，已转换为字符串格式）
+// 节点过滤正则（内核原生 exclude-filter 使用）
+// ⚠️ 注意：不要在此处随意添加“测速”等词汇，否则会误杀策略组
 const excludeFilterStr = '返利|循环|广州|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|expire|http|com|traffic';
 
 // 预定义基础规则
 const rules = [
-  // 禁用国外 QUIC 流量
   'AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((OR,((RULE-SET,cn_additional),(RULE-SET,cn_ip,no-resolve)))))),REJECT',
-  // 私有网络直连
   'RULE-SET,private,直连',
   'RULE-SET,private_ip,直连,no-resolve',
-  // 国内直连
   'RULE-SET,games_cn,直连',
   'RULE-SET,epicgames,直连',
   'RULE-SET,nvidia_cn,直连',
@@ -44,7 +42,7 @@ const rules = [
   'DOMAIN,international-gfe.download.nvidia.com,直连',
 ];
 
-// 地区策略组定义 
+// 地区策略组定义
 const regionDefinitions = [
   {
     name: '香港',
@@ -103,7 +101,7 @@ const baseRuleProviders = {
   cn: { ...ruleProviderCommonDomain, url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/direct.mrs', path: './ruleset/cn.mrs' },
 };
 
-// 策略组公共配置
+// 策略组公共基础配置
 const groupBaseOption = {
   interval: 600,
   timeout: 3000,
@@ -112,11 +110,6 @@ const groupBaseOption = {
   'max-failed-times': 3,
   'empty-fallback': 'REJECT',
 };
-
-const selectBaseOption = { ...groupBaseOption, type: 'select', hidden: false };
-const urlTestBaseOption = { ...groupBaseOption, type: 'url-test', tolerance: 50, 'exclude-type': 'DIRECT', icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png', hidden: true };
-const loadBalanceBaseOption = { ...groupBaseOption, type: 'load-balance', strategy: 'sticky-sessions', 'exclude-type': 'DIRECT', icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png', hidden: true };
-const fallbackBaseOption = { ...groupBaseOption, type: 'fallback', 'exclude-type': 'DIRECT', icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available_1.png', hidden: true };
 
 // 分流策略组配置
 const serviceConfigs = [
@@ -133,34 +126,37 @@ const serviceConfigs = [
 
 function main(config) {
   const newConfig = { ...config };
+  
+  // 稳妥获取订阅提供者名称，避免因找不到报错而导致脚本彻底崩溃
+  const providerNames = config['proxy-providers'] ? Object.keys(config['proxy-providers']) : [];
 
-  // ① 获取基础配置里的 Providers 名字列表 (例如: Provider_1, Provider_2)
-  const providerNames = Object.keys(config['proxy-providers'] || {});
-
-  if (providerNames.length === 0) {
-    throw new Error('未在配置文件中找到 proxy-providers，请确认基础配置中已定义节点提供者！');
-  }
-
-  // ② 策略组生成 —— 利用内核 filter 参数实现原生地区分类
   const generatedRegionGroups = [];
   const groupNamesOfSelect = [];
 
+  // ② 生成地区策略组 (严格分为两层：显式的自动测速组 + 主选择组)
   for (const r of regionDefinitions) {
-    const urlTestName = `${r.name}-自动选择`;
+    const autoTestName = `${r.name} - 自动测速`; // 改名：规避 exclude 里的“选择”关键字被内核误杀
     
+    // 第一层：该地区的自动测速子组
     generatedRegionGroups.push({
-      ...urlTestBaseOption,
-      name: urlTestName,
+      ...groupBaseOption,
+      type: 'url-test',
+      tolerance: 50,
+      name: autoTestName,
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png',
       use: providerNames,
       filter: r.regex,
-      'exclude-filter': excludeFilterStr
+      'exclude-filter': excludeFilterStr,
+      hidden: true
     });
 
+    // 第二层：该地区的主选择组
     generatedRegionGroups.push({
-      ...selectBaseOption,
+      ...groupBaseOption,
+      type: 'select',
       name: r.name,
       icon: r.icon,
-      proxies: [urlTestName],
+      proxies: [autoTestName], // 完美包含：将第一层的自动测速组放在下拉列表第一位
       use: providerNames,
       filter: r.regex,
       'exclude-filter': excludeFilterStr
@@ -173,34 +169,47 @@ function main(config) {
 
   functionalGroups.push(
     {
-      ...selectBaseOption,
+      ...groupBaseOption,
+      type: 'select',
       name: '默认代理',
       proxies: [...groupNamesOfSelect, '手动选择', '自动选择', '负载均衡'],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png',
     },
     {
-      ...selectBaseOption,
+      ...groupBaseOption,
+      type: 'select',
       name: '手动选择',
       use: providerNames,
       'exclude-filter': excludeFilterStr,
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png',
     },
     {
-      ...urlTestBaseOption,
+      ...groupBaseOption,
+      type: 'url-test',
+      tolerance: 50,
       name: '自动选择',
       use: providerNames,
       'exclude-filter': excludeFilterStr,
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png',
+      hidden: true
     },
     {
-      ...loadBalanceBaseOption,
+      ...groupBaseOption,
+      type: 'load-balance',
+      strategy: 'sticky-sessions',
       name: '负载均衡',
       use: providerNames,
       'exclude-filter': excludeFilterStr,
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png',
+      hidden: true
     },
     {
-      ...fallbackBaseOption,
+      ...groupBaseOption,
+      type: 'fallback',
       name: '故障转移',
       proxies: ['新加坡', '香港', '台湾省', '日本', '美国'],
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available_1.png',
+      hidden: true
     }
   );
 
@@ -223,7 +232,8 @@ function main(config) {
     }
 
     functionalGroups.push({
-      ...selectBaseOption,
+      ...groupBaseOption,
+      type: 'select',
       name: svc.name,
       icon: svc.icon,
       proxies: groupProxies,
@@ -233,13 +243,15 @@ function main(config) {
 
   functionalGroups.push(
     {
-      ...selectBaseOption,
+      ...groupBaseOption,
+      type: 'select',
       name: '漏网之鱼',
       proxies: ['默认代理', '负载均衡', '自动选择', '直连'],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png',
     },
     {
-      ...selectBaseOption,
+      ...groupBaseOption,
+      type: 'select',
       name: '直连',
       proxies: ['🇨🇳 直连 | IPv4优先', '🇨🇳 直连 | IPv6优先', '🇨🇳 直连 | 双栈'],
       url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
@@ -248,7 +260,8 @@ function main(config) {
   );
 
   const globalGroup = {
-    ...selectBaseOption,
+    ...groupBaseOption,
+    type: 'select',
     name: 'GLOBAL',
     proxies: [...functionalGroups.map((g) => g.name), ...generatedRegionGroups.map((g) => g.name)],
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
@@ -261,7 +274,7 @@ function main(config) {
     { name: '🇨🇳 直连 | 双栈',     type: 'direct' },
   ];
 
-  // --- 核心：替换为你提供的自定义 DNS 配置 ---
+  // --- DNS 配置 ---
   newConfig['dns'] = {
     enable: true,
     ipv6: false,
@@ -290,97 +303,25 @@ function main(config) {
     'fallback-filter': {
       geoip: true,
       'geoip-code': 'CN',
-      geosite: [
-        'gfw'
-      ],
-      ipcidr: [
-        '240.0.0.0/4'
-      ],
-      domain: [
-        '+.google.com',
-        '+.facebook.com',
-        '+.youtube.com'
-      ]
+      geosite: ['gfw'],
+      ipcidr: ['240.0.0.0/4'],
+      domain: ['+.google.com', '+.facebook.com', '+.youtube.com']
     },
     'fake-ip-filter': [
-      '*.lan',
-      '*.localdomain',
-      '*.example',
-      '*.invalid',
-      '*.localhost',
-      '*.test',
-      '*.local',
-      '*.home.arpa',
-      'time.*.com',
-      'time.*.gov',
-      'time.*.edu.cn',
-      'time.*.apple.com',
-      'time1.*.com',
-      'time2.*.com',
-      'time3.*.com',
-      'time4.*.com',
-      'time5.*.com',
-      'time6.*.com',
-      'time7.*.com',
-      'ntp.*.com',
-      'ntp1.*.com',
-      'ntp2.*.com',
-      'ntp3.*.com',
-      'ntp4.*.com',
-      'ntp5.*.com',
-      'ntp6.*.com',
-      'ntp7.*.com',
-      '*.time.edu.cn',
-      '*.ntp.org.cn',
-      '+.pool.ntp.org',
-      'time1.cloud.tencent.com',
-      'stun.*.*',
-      'stun.*.*.*',
-      'swscan.apple.com',
-      'mesu.apple.com',
-      'music.163.com',
-      '*.music.163.com',
-      '*.126.net',
-      'musicapi.taihe.com',
-      'music.taihe.com',
-      'songsearch.kugou.com',
-      'trackercdn.kugou.com',
-      '*.kuwo.cn',
-      'api-jooxtt.sanook.com',
-      'api.joox.com',
-      'y.qq.com',
-      '*.y.qq.com',
-      'streamoc.music.tc.qq.com',
-      'mobileoc.music.tc.qq.com',
-      'isure.stream.qqmusic.qq.com',
-      'dl.stream.qqmusic.qq.com',
-      'aqqmusic.tc.qq.com',
-      'amobile.music.tc.qq.com',
-      'localhost.ptlogin2.qq.com',
-      '*.msftconnecttest.com',
-      '*.msftncsi.com',
-      '*.xiami.com',
-      '*.music.migu.cn',
-      'music.migu.cn',
-      '+.wotgame.cn',
-      '+.wggames.cn',
-      '+.wowsgame.cn',
-      '+.wargaming.net',
-      '*.*.*.srv.nintendo.net',
-      '*.*.stun.playstation.net',
-      'xbox.*.*.microsoft.com',
-      '*.*.xboxlive.com',
-      '*.ipv6.microsoft.com',
-      'teredo.*.*.*',
-      'teredo.*.*',
-      'speedtest.cros.wr.pvp.net',
-      '+.jjvip8.com',
-      'www.douyu.com',
-      'activityapi.huya.com',
-      'activityapi.huya.com.w.cdngslb.com',
-      'www.bilibili.com',
-      'api.bilibili.com',
-      'a.w.bilicdn1.com'
+      '*.lan', '*.localdomain', '*.example', '*.invalid', '*.localhost', '*.test', '*.local', '*.home.arpa',
+      'time.*.com', 'time.*.gov', 'time.*.edu.cn', 'time.*.apple.com', 'time1.*.com', 'time2.*.com', 'time3.*.com',
+      'time4.*.com', 'time5.*.com', 'time6.*.com', 'time7.*.com', 'ntp.*.com', 'ntp1.*.com', 'ntp2.*.com', 'ntp3.*.com',
+      'ntp4.*.com', 'ntp5.*.com', 'ntp6.*.com', 'ntp7.*.com', '*.time.edu.cn', '*.ntp.org.cn', '+.pool.ntp.org',
+      'time1.cloud.tencent.com', 'stun.*.*', 'stun.*.*.*', 'swscan.apple.com', 'mesu.apple.com', 'music.163.com',
+      '*.music.163.com', '*.126.net', 'musicapi.taihe.com', 'music.taihe.com', 'songsearch.kugou.com', 'trackercdn.kugou.com',
+      '*.kuwo.cn', 'api-jooxtt.sanook.com', 'api.joox.com', 'y.qq.com', '*.y.qq.com', 'streamoc.music.tc.qq.com',
+      'mobileoc.music.tc.qq.com', 'isure.stream.qqmusic.qq.com', 'dl.stream.qqmusic.qq.com', 'aqqmusic.tc.qq.com',
+      'amobile.music.tc.qq.com', 'localhost.ptlogin2.qq.com', '*.msftconnecttest.com', '*.msftncsi.com', '*.xiami.com',
+      '*.music.migu.cn', 'music.migu.cn', '+.wotgame.cn', '+.wggames.cn', '+.wowsgame.cn', '+.wargaming.net',
+      '*.*.*.srv.nintendo.net', '*.*.stun.playstation.net', 'xbox.*.*.microsoft.com', '*.*.xboxlive.com',
+      '*.ipv6.microsoft.com', 'teredo.*.*.*', 'teredo.*.*', 'speedtest.cros.wr.pvp.net', '+.jjvip8.com',
+      'www.douyu.com', 'activityapi.huya.com', 'activityapi.huya.com.w.cdngslb.com', 'www.bilibili.com',
+      'api.bilibili.com', 'a.w.bilicdn1.com'
     ]
   };
 
