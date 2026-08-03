@@ -281,7 +281,7 @@ function main(config) {
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/16',
     'use-hosts': true,
-    'respect-rules': true,
+    'respect-rules': false,
     'default-nameserver': [
       '223.5.5.5',
       '119.29.29.29',
